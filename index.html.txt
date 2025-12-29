@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PCC – Praneeth Creativity Certificates</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ---------- BASE ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight:200;
+  background:#f2f6ff;
+  color:#111;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  background:#007AFF;
+  color:white;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.nav span{
+  margin-right:16px;
+  cursor:pointer;
+  font-weight:300;
+}
+
+/* ---------- PROFILE ---------- */
+.pfp{
+  width:36px;height:36px;
+  border-radius:50%;
+  background:white;
+  color:#007AFF;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:500;
+  cursor:pointer;
+}
+
+.menu{
+  position:absolute;
+  right:15px;
+  top:60px;
+  background:white;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+  display:none;
+}
+.menu div{
+  padding:12px 18px;
+  cursor:pointer;
+}
+.menu div:hover{background:#eee}
+
+/* ---------- CARDS ---------- */
+.grid{
+  padding:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  animation:fade .4s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+
+.hidden{display:none}
+
+button{
+  background:#007AFF;
+  color:white;
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  margin:6px 0;
+  cursor:pointer;
+}
+button:active{transform:scale(.96)}
+
+textarea,input,select{
+  width:100%;
+  border-radius:10px;
+  border:1px solid #ccc;
+  padding:10px;
+  font-family:inherit;
+}
+canvas{background:white;border-radius:12px}
+
+/* ---------- PHYSICS ---------- */
+.simBox{
+  border:2px solid #007AFF;
+  height:220px;
+  border-radius:14px;
+  position:relative;
+  overflow:hidden;
+}
+.ball{
+  width:30px;height:30px;
+  border-radius:50%;
+  background:#ff3b30;
+  position:absolute;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ---------- AUTH ---------- -->
+<div id="auth" class="grid">
+  <div class="card">
+    <h2>PCC Login</h2>
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+    <p id="msg"></p>
+  </div>
+</div>
+
+<!-- ---------- APP ---------- -->
+<div id="app" class="hidden">
+
+<header>
+  <div class="nav">
+    <span onclick="show('home')">Home</span>
+    <span onclick="show('science')">Science</span>
+    <span onclick="show('physics')">Physics</span>
+    <span onclick="show('coding')">Coding</span>
+  </div>
+  <div class="pfp" onclick="toggleMenu()" id="pfp">U</div>
+</header>
+
+<div class="menu" id="menu">
+  <div onclick="show('manage')">Manage</div>
+  <div onclick="logout()">Logout</div>
+</div>
+
+<!-- ---------- HOME ---------- -->
+<div id="home" class="grid">
+  <div class="card">🎨 Drawing Contest</div>
+  <div class="card">🧠 Thinking Quiz (100 Q)</div>
+  <div class="card">🧪 Science Lab</div>
+  <div class="card">⚛️ Physics Simulations</div>
+</div>
+
+<!-- ---------- SCIENCE ---------- -->
+<div id="science" class="hidden grid">
+  <div class="card">
+    <h3>🧪 Matter Lab</h3>
+    <select id="matter">
+      <option>Water (Liquid)</option>
+      <option>Oxygen (Gas)</option>
+      <option>Hydrogen (Gas)</option>
+      <option>Gold (Solid)</option>
+      <option>Steel (Solid)</option>
+      <option>Pyrite (Solid)</option>
+      <option>Sodium (Solid)</option>
+      <option>Potassium (Solid)</option>
+      <option>Carbon (Solid)</option>
+      <option>Calcium (Solid)</option>
+      <option>Chloride (Compound)</option>
+      <option>Fluoride (Compound)</option>
+      <option>Cyanide (Toxic)</option>
+      <option>Acid (Corrosive)</option>
+    </select>
+    <p id="matterInfo"></p>
+  </div>
+</div>
+
+<!-- ---------- PHYSICS ---------- -->
+<div id="physics" class="hidden grid">
+  <div class="card">
+    <h3>⚛️ Gravity Simulation</h3>
+    <div class="simBox" id="sim">
+      <div class="ball" id="ball"></div>
+    </div>
+    <button onclick="drop()">Drop Ball</button>
+  </div>
+</div>
+
+<!-- ---------- CODING ---------- -->
+<div id="coding" class="hidden grid">
+  <div class="card">
+    <h3>💻 Coding Course</h3>
+    <p>Step <span id="step">1</span>/100</p>
+    <p id="lesson"></p>
+    <textarea id="code">// try console.log("Hello PCC")</textarea>
+    <button onclick="run()">Run</button>
+    <button onclick="next()">Next</button>
+    <pre id="out"></pre>
+  </div>
+</div>
+
+<!-- ---------- MANAGER ---------- -->
+<div id="manage" class="hidden grid">
+  <div class="card">
+    <h3>🔐 Page Manager</h3>
+    <input id="mgrPass" placeholder="Passcode">
+    <button onclick="enterMgr()">Enter</button>
+    <div id="mgrPanel" class="hidden">
+      <p>Users:</p>
+      <div id="users"></div>
+      <a href="https://github.com/ushatammisetty-del/pcc-final-edition-maybe-" target="_blank">GitHub Repo</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ---------- AUTH ---------- */
+let users=JSON.parse(localStorage.users||"{}")
+async function hash(t){
+  return [...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t)))]
+  .map(b=>b.toString(16).padStart(2,"0")).join("")
+}
+
+async function signup(){
+  if(users[user.value]) return msg.innerText="Exists"
+  users[user.value]=await hash(pass.value)
+  localStorage.users=JSON.stringify(users)
+  msg.innerText="Signed up"
+}
+async function login(){
+  if(users[user.value]!==await hash(pass.value)) return msg.innerText="Wrong"
+  localStorage.current=user.value
+  start()
+}
+function start(){
+  auth.classList.add("hidden")
+  app.classList.remove("hidden")
+  pfp.innerText=localStorage.current[0].toUpperCase()
+}
+if(localStorage.current) start()
+function logout(){localStorage.clear();location.reload()}
+
+/* ---------- NAV ---------- */
+function show(id){
+  document.querySelectorAll("#app > div").forEach(d=>d.classList.add("hidden"))
+  document.getElementById(id).classList.remove("hidden")
+}
+function toggleMenu(){menu.style.display=menu.style.display?"":"block"}
+
+/* ---------- SCIENCE ---------- */
+matter.onchange=()=>{
+  matterInfo.innerText="State and properties explained scientifically."
+}
+
+/* ---------- PHYSICS ---------- */
+let y=0,v=0
+function drop(){
+  y=0;v=0
+  let b=ball
+  let i=setInterval(()=>{
+    v+=0.6
+    y+=v
+    if(y>180){y=180;v*=-0.6}
+    b.style.top=y+"px"
+  },16)
+}
+
+/* ---------- CODING ---------- */
+const lessons=Array.from({length:100},(_,i)=>"Lesson "+(i+1)+": JavaScript concept")
+let s=0
+function load(){lesson.innerText=lessons[s];step.innerText=s+1}
+function next(){if(s<99)s++;load()}
+function run(){
+  try{out.innerText=eval(code.value)||"OK"}catch(e){out.innerText=e}
+}
+load()
+
+/* ---------- MANAGER ---------- */
+function enterMgr(){
+  if(mgrPass.value==="bujjo"){
+    mgrPanel.classList.remove("hidden")
+    usersDiv()
+  }
+}
+function usersDiv(){
+  users.innerHTML=""
+  Object.keys(users).forEach(u=>{
+    let d=document.createElement("div")
+    d.innerHTML=u+" <button onclick='ban(\""+u+"\")'>Ban</button>"
+    users.appendChild(d)
+  })
+}
+function ban(u){
+  delete users[u]
+  localStorage.users=JSON.stringify(users)
+  usersDiv()
+}
+</script>
+
+</body>
+</html>
